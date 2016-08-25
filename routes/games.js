@@ -42,7 +42,7 @@ router.post('/newgame', function(req, res, next) {
 			// Store game
 			Game.create(game, function(err, createdGame) {
 				if (err) return next(err);
-				res.json(getInChannelMessage("Game started!\n" + stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!"));
+				res.json(getInChannelMessage("Game started!\n" + getCurrentBoardAndPlayer(game, gameState));
 			});
 			// Update game state
 			gameState.currentGameId = game.id;
@@ -95,7 +95,7 @@ router.post('/makemove', function(req, res, next) {
 							return;
 						} else {
 							gameState.currentPlayer = gameState.currentPlayer ? 0 : 1;
-							res.json(getInChannelMessage(stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!"));
+							res.json(getInChannelMessage(getCurrentBoardAndPlayer(game, gameState));
 							// res.send(stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!");							
 							gameState.positionsPlayed = gameState.positionsPlayed + 1;
 							gameState.save(function(err) {
@@ -119,7 +119,7 @@ router.post('/getboard', function(req, res, next) {
 			res.send(NO_ACTIVE_GAME);
 		} else {
 			Game.findOne({_id: gameState.currentGameId}, function(err, game) {
-				res.send(stringifyBoard(game.boardArray));
+				res.send(getCurrentBoardAndPlayer(game, gameState));
 			});	
 		}
 	});
@@ -324,6 +324,10 @@ var getInChannelMessage = function getInChannelMessage(string) {
 		"text" : string
 	};
 	return msg;
+}
+
+var getCurrentBoardAndPlayer = function getCurrentBoardAndPlayer(game, gameState) {
+	return stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!");
 }
 
 
