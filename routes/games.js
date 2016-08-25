@@ -42,7 +42,7 @@ router.post('/newgame', function(req, res, next) {
 			// Store game
 			Game.create(game, function(err, createdGame) {
 				if (err) return next(err);
-					res.json(getInChannelMessage("Game started!\n" + stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!"));
+				res.json(getInChannelMessage("Game started!\n" + stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!"));
 			});
 			// Update game state
 			gameState.currentGameId = game.id;
@@ -244,10 +244,10 @@ var stringifyBoard = function stringifyBoard(board) {
 			string += " " + (i+1) + " |";
 		}
 		if (board[i] == 1) {
-			string += " :x: |";
+			string += " X |";
 		}
 		if (board[i] == 2) {
-			string += " :o: |"
+			string += " O |"
 		}
 		if ((i+1) % 3 == 0 && i < board.length) {
 			string += "\n|---+---+---|\n"
