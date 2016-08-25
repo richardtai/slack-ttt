@@ -319,7 +319,7 @@ var clearAll = function clearAll() {
 }
 
 var getInChannelMessage = function getInChannelMessage(string) {
-	var string = "{response_type: in_channel, text: " + string + "}";
+	var string = "{\"response_type\": \"in_channel\", \"text\": \"" + string + "\"}";
 }
 
 
