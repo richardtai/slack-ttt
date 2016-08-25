@@ -327,7 +327,7 @@ var getInChannelMessage = function getInChannelMessage(string) {
 }
 
 var getCurrentBoardAndPlayer = function getCurrentBoardAndPlayer(game, gameState) {
-	return stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!";
+	return stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState.currentPlayer) + "'s turn!";
 }
 
 
