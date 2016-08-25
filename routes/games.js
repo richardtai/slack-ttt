@@ -84,6 +84,7 @@ router.post('/makemove', function(req, res, next) {
 					game.save(function(err) {
 						if (err) throw (err);
 						if(checkWinner(game.boardArray, position, gameState.currentPlayer + 1)) {
+							res.response_type = "in_channel";
 							res.send(stringifyBoard(game.boardArray) + "\n\n" + getVictoryString(game, gameState.currentPlayer));
 							clearAll();
 							return;
@@ -93,6 +94,7 @@ router.post('/makemove', function(req, res, next) {
 							clearAll();
 							return;
 						} else {
+							res.response_type = "in_channel";
 							res.send(stringifyBoard(game.boardArray));							
 							gameState.currentPlayer = gameState.currentPlayer ? 0 : 1;
 							gameState.positionsPlayed = gameState.positionsPlayed + 1;
