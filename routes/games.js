@@ -37,8 +37,8 @@ router.post('/newgame', function(req, res, next) {
 		if (gameState.hasOngoingGame) {
 			res.send(ACTIVE_GAME);
 		} else {
-			// Create game
-			var game = createNewGame("@"+req.body.user_name, req.body.text);
+			// Create game (strip @)
+			var game = createNewGame(req.body.user_name, req.body.text.substring(1));
 			// Store game
 			Game.create(game, function(err, createdGame) {
 				if (err) return next(err);
