@@ -244,10 +244,10 @@ var stringifyBoard = function stringifyBoard(board) {
 			string += " " + (i+1) + " |";
 		}
 		if (board[i] == 1) {
-			string += " X |";
+			string += " :x: |";
 		}
 		if (board[i] == 2) {
-			string += " 0 |"
+			string += " :o: |"
 		}
 		if ((i+1) % 3 == 0 && i < board.length) {
 			string += "\n|---+---+---|\n"
