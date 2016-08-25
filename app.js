@@ -17,7 +17,7 @@ var app = express();
 mongoose.Promise = global.Promise;
 
 // connect to MongoDB
-mongoose.connect('mongodb://heroku_4pwzr0qg:g8tue9ssohnj2fuokktelba4ap@ds041831.mlab.com:41831/heroku_4pwzr0qg');
+mongoose.connect('mongodb://heroku_4pwzr0qg:g8tue9ssohnj2fuokktelba4ap@ds041831.mlab.com:41831/heroku_4pwzr0qg')
  .then(() => console.log('Mongodb connection successful.'))
  .catch((err) => console.log(err));
 // mongoose.connect('mongodb://localhost/slack-tictactoe-api')
