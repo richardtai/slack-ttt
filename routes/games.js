@@ -38,7 +38,7 @@ router.post('/newgame', function(req, res, next) {
 			res.send(ACTIVE_GAME);
 		} else {
 			// Create game
-			var game = createNewGame(req.body.user_name, req.body.text);
+			var game = createNewGame("@"+req.body.user_name, req.body.text);
 			// Store game
 			Game.create(game, function(err, createdGame) {
 				if (err) return next(err);
@@ -84,8 +84,8 @@ router.post('/makemove', function(req, res, next) {
 					game.save(function(err) {
 						if (err) throw (err);
 						if(checkWinner(game.boardArray, position, gameState.currentPlayer + 1)) {
-							res.response_type = "in_channel";
-							res.send(stringifyBoard(game.boardArray) + "\n\n" + getVictoryString(game, gameState.currentPlayer));
+							var victoryString = getInChannelMessage(stringifyBoard(game.boardArray) + "\n\n" + getVictoryString(game, gameState.currentPlayer));
+							res.send(victoryString);
 							clearAll();
 							return;
 						} 
@@ -95,8 +95,8 @@ router.post('/makemove', function(req, res, next) {
 							return;
 						} else {
 							gameState.currentPlayer = gameState.currentPlayer ? 0 : 1;
-							res.json(getInChannelMessage(getCurrentBoardAndPlayer(game, gameState)));
-							// res.send(stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!");							
+							var currentStateString = getInChannelMessage(getCurrentBoardAndPlayer(game, gameState));
+							res.json(currentStateString);
 							gameState.positionsPlayed = gameState.positionsPlayed + 1;
 							gameState.save(function(err) {
 								if (err) throw err;
