@@ -42,7 +42,8 @@ router.post('/newgame', function(req, res, next) {
 			// Store game
 			Game.create(game, function(err, createdGame) {
 				if (err) return next(err);
-				res.send(createdGame);
+				res.send("Game started!\n" + stringifyBoard(createdGame.gameBoard) + 
+					"It is " + getCurrentPlayerName(game, gameState) "'s turn!");
 			});
 			// Update game state
 			gameState.currentGameId = game.id;
