@@ -1,1 +1,1 @@
-web: nodemon slack-tictactoe/app.js
+web: nodemon app.js
