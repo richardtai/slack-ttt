@@ -321,7 +321,8 @@ var clearAll = function clearAll() {
 var getInChannelMessage = function getInChannelMessage(string) {
 	var msg = {
 		"response_type" : "in_channel",
-		"text" : string
+		"text" : string,
+		"mrkdwn" : true
 	};
 	return msg;
 }
