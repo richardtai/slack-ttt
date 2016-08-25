@@ -95,8 +95,8 @@ router.post('/makemove', function(req, res, next) {
 							return;
 						} else {
 							gameState.currentPlayer = gameState.currentPlayer ? 0 : 1;
-							res.response_type = "in_channel";
-							res.json(stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!");							
+							res.json(getInChannelMessage(stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!"));
+							// res.send(stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState) + "'s turn!");							
 							gameState.positionsPlayed = gameState.positionsPlayed + 1;
 							gameState.save(function(err) {
 								if (err) throw err;
@@ -316,6 +316,10 @@ var clearAll = function clearAll() {
 		if (err) throw err;
 		console.log("GameState cleared.");
 	});
+}
+
+var getInChannelMessage = function getInChannelMessage(string) {
+	var string = "{response_type: in_channel, text: " + string + "}";
 }
 
 
