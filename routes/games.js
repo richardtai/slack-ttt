@@ -42,7 +42,7 @@ router.post('/newgame', function(req, res, next) {
 			// Store game
 			Game.create(game, function(err, createdGame) {
 				if (err) return next(err);
-				res.json(getInChannelMessage("Game started!\n" + getCurrentBoardAndPlayer(game, gameState));
+				res.json(getInChannelMessage("Game started!\n" + getCurrentBoardAndPlayer(game, gameState)));
 			});
 			// Update game state
 			gameState.currentGameId = game.id;
