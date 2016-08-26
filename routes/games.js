@@ -33,26 +33,26 @@ router.post('/newgame', function(req, res, next) {
 	if (req.body.text == null) {
 		res.send("You've got to challenge someone! Confused? Try /help!");
 	}
-	GameState.findOne({}, function(err, gameState) {
-		if (err) throw (err);
+	var gameStatePromise = GameState.findOne({}).exec();
+	gameStatePromise.then(function(gameState){
 		if (gameState == null) {
 			var gameState = getInitialGameState();
 		}
 		if (gameState.hasOngoingGame) {
 			res.send(ACTIVE_GAME);
 		} else {
-			// Create game (strip @)
 			var game = createNewGame(req.body.user_name, req.body.text.substring(1));
-			Game.create(game, function(err, createdGame) {
-				if (err) return next(err);
+			var gamePromise = game.save();
+			gamePromise.then(function(createdGame) {
 				res.json(getInChannelMessage("Game started!\n" + getCurrentBoardAndPlayer(game, gameState)));
-			});
-			gameState.currentGameId = game.id;
-			gameState.hasOngoingGame = true;
-			gameState.save(function(err) {
-				if (err) throw err;
+				gameState.currentGameId = game.id;
+				gameState.hasOngoingGame = true;
+				gameState.save();					
 			});
 		}
+	})
+	.catch(function (err) {
+		console.log("Error: " + err);
 	});
 });
 

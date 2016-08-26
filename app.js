@@ -22,9 +22,6 @@ mongoose.Promise = global.Promise;
 mongoose.connect(config.mongodbHost)
  .then(() => console.log('Mongodb connection successful.'))
  .catch((err) => console.log(err));
-// mongoose.connect('mongodb://localhost/slack-tictactoe-api')
-// 	.then(() => console.log('Mongodb connection successful.'))
-// 	.catch((err) => console.log(err));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
