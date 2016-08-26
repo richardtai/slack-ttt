@@ -16,7 +16,10 @@ var EMPTY_SPACE = 0;
 var LOWER_BOUNDARY = 1;
 var UPPER_BOUNDARY = 9;
 
-var token = "xoxp-71738867895-71729533088-72777958118-a997ac4143";
+var NEWGAME_TOKEN = "LizhEsO1HxQDS5IQY2svHoy0";
+var CHOOSE_TOKEN = "8k2Yx7v8AKQMeEVZDppnjeC2";
+var CURRENTBOARD_TOKEN = "vYAGnUzQMfxbtunRdO6zWlFi";
+var USAGE_TOKEN = "jX61S3SPQNq6A4c5tB0ifSbj";
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -29,7 +32,7 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/newgame', function(req, res, next) {
-	if (req.body.token !== token) {
+	if (req.body.token !== NEWGAME_TOKEN) {
 		return;
 	}
 	if (req.body.text == null) {
@@ -63,6 +66,9 @@ router.post('/newgame', function(req, res, next) {
 
 
 router.post('/makemove', function(req, res, next) {
+	if (req.body.token !== CHOOSE_TOKEN) {
+		return;
+	}
 	var updatePosition = req.body.text;
 	if (isNaN(updatePosition) || updatePosition > UPPER_BOUNDARY || updatePosition < LOWER_BOUNDARY) {
 		res.send(ENTER_VALID_BOARD_POSITION);
@@ -117,6 +123,9 @@ router.post('/makemove', function(req, res, next) {
 });
 
 router.post('/help', function(req, res, next) {
+	if (req.body.token !== USAGE_TOKEN) {
+		return;
+	}
 	res.send(HELP);
 });
 
@@ -124,6 +133,9 @@ router.post('/help', function(req, res, next) {
 * Returns the current board.
 */
 router.post('/getboard', function(req, res, next) {
+	if (req.body.token !== CURRENTBOARD_TOKEN) {
+		return;
+	}
 	GameState.findOne({}, function(err, gameState) {
 		if (err) throw err;
 		if (gameState == null) {
