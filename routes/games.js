@@ -10,6 +10,7 @@ var ACTIVE_GAME = "There is an ongoing game!";
 var ENTER_VALID_BOARD_POSITION = "Enter a board position 1-9.";
 var POSITION_ALREADY_PLAYED = "This space has already been taken!";
 var ENDGAME_TIE = "Game over! It's a tie!";
+var HELP = "```Welcome to Tic Tac Toe! Here are your available options:\n\t/ttt [insert username]\tChallenge a user to a game of tic tac toe!```";
 var MAX_MOVES = 8;
 var EMPTY_SPACE = 0;
 var LOWER_BOUNDARY = 1;
@@ -28,6 +29,9 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/newgame', function(req, res, next) {
+	if (req.body.text == null) {
+		res.send("You've got to challenge someone! Confused? Try /help!");
+	}
 	GameState.findOne({}, function(err, gameState) {
 		if (err) throw (err);
 		if (gameState == null) {
@@ -107,6 +111,10 @@ router.post('/makemove', function(req, res, next) {
 		  	});
 		});
 	}
+});
+
+router.post('/help', function(req, res, next) {
+	res.send(HELP);
 });
 
 /**
