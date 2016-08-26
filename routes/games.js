@@ -29,6 +29,9 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/newgame', function(req, res, next) {
+	if (req.body.token !== token) {
+		return;
+	}
 	if (req.body.text == null) {
 		res.send("You've got to challenge someone! Confused? Try /help!");
 	}
