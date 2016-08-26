@@ -11,6 +11,7 @@ var ACTIVE_GAME = "There is an ongoing game!";
 var ENTER_VALID_BOARD_POSITION = "Enter a board position 1-9.";
 var POSITION_ALREADY_PLAYED = "This space has already been taken!";
 var ENDGAME_TIE = "Game over! It's a tie!";
+var NEWGAME_IMPROPER_INPUT = "You've got to challenge someone! Confused? Try /usage!";
 var HELP = "```Welcome to Tic Tac Toe! Here are your available options:\n\t/ttt [insert username]\tChallenge a user to a game of tic tac toe!\n\t/choose [1-9]\t\t\t Enter a number [1-9] that corresponds to a position on the board to play!\n\t/currentboard\t\t\t Returns the current game and whose turn it is.\n\t/usage\t\t\t\t\tReturns commands and usages.\n```";
 var MAX_MOVES = 8;
 var EMPTY_SPACE = 0;
@@ -31,12 +32,12 @@ router.post('/newgame', function(req, res, next) {
 		return;
 	}
 	if (req.body.text == null) {
-		res.send("You've got to challenge someone! Confused? Try /help!");
+		res.send(NEWGAME_IMPROPER_INPUT);
 	}
 	var gameStatePromise = GameState.findOne({}).exec();
-	gameStatePromise.then(function(gameState){
+	gameStatePromise.then(function(gameState) {
 		if (gameState == null) {
-			var gameState = getInitialGameState();
+			gameState = getInitialGameState();
 		}
 		if (gameState.hasOngoingGame) {
 			res.send(ACTIVE_GAME);
@@ -65,13 +66,17 @@ router.post('/makemove', function(req, res, next) {
 	if (isNaN(updatePosition) || updatePosition > UPPER_BOUNDARY || updatePosition < LOWER_BOUNDARY) {
 		res.send(ENTER_VALID_BOARD_POSITION);
 	} else {
-		GameState.findOne({}, function(err, gameState) {
+		var gameStatePromise = GameState.findOne({}).exec();
+		gameStatePromise.then(function(gameState) {
 			if (gameState == null) {
 				res.send(NO_ACTIVE_GAME);
 				return;
 			}
-			Game.findById(gameState.currentGameId, function (err, game) {
-				if (err) throw (err);
+			return gameState;
+		})
+		.then(function(gameState) {
+			var gamePromise = Game.findById(gameState.currentGameId).exec();
+			gamePromise.then(function(game) {
 				if(!isCurrentPlayer(game, gameState.currentPlayer, req.body.user_name)) {
 					res.send("It's " + getCurrentPlayerName(game, gameState.currentPlayer) + "'s turn!");
 					return;
@@ -80,34 +85,31 @@ router.post('/makemove', function(req, res, next) {
 				var position = updatePosition - 1;
 				if (gameBoard[position] != EMPTY_SPACE) {
 					res.send(POSITION_ALREADY_PLAYED);
+					return;
 				} else {
 					game.boardArray.set(position, gameState.currentPlayer + 1);
-					game.save(function(err) {
-						if (err) throw (err);
-						// check for winner
-						if(checkWinner(game.boardArray, position, gameState.currentPlayer + 1)) {
-							var victoryString = getInChannelMessage(stringifyBoard(game.boardArray) + "\n\n" + getVictoryString(game, gameState.currentPlayer));
-							res.send(victoryString);
-							clearAll();
-							return;
-						} 
-						// check if tied
-						else if (gameState.positionsPlayed === MAX_MOVES) {
-							res.send(ENDGAME_TIE);
-							clearAll();
-							return;
-						} else {
-							gameState.currentPlayer = gameState.currentPlayer ? 0 : 1;
-							var currentStateString = getInChannelMessage(getCurrentBoardAndPlayer(game, gameState));
-							res.json(currentStateString);
-							gameState.positionsPlayed = gameState.positionsPlayed + 1;
-							gameState.save(function(err) {
-								if (err) throw err;
-							});									
-						}								
-					});
-				}
-		  	});
+					if(checkWinner(game.boardArray, position, gameState.currentPlayer + 1)) {
+						var victoryString = getInChannelMessage(stringifyBoard(game.boardArray) + "\n\n" + getVictoryString(game, gameState.currentPlayer));
+						res.send(victoryString);
+						clearAll();
+						return;
+					} 
+					else if (gameState.positionsPlayed === MAX_MOVES) {
+						res.send(ENDGAME_TIE);
+						clearAll();
+						return;
+					} else {
+						gameState.currentPlayer = gameState.currentPlayer ? 0 : 1;
+						var currentStateString = getInChannelMessage(getCurrentBoardAndPlayer(game, gameState));
+						res.json(currentStateString);
+						gameState.positionsPlayed = gameState.positionsPlayed + 1;
+						gameState.save();	
+					}
+				}					
+			})
+		})
+		.catch(function(err) {
+			console.log("Error: " + err);
 		});
 	}
 });
