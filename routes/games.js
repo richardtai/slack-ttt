@@ -87,8 +87,7 @@ router.post('/makemove', function(req, res, next) {
 					res.send(POSITION_ALREADY_PLAYED);
 					return;
 				} else {
-					game.boardArray.set(position, gameState.currentPlayer + 1);
-					game.save();
+					game.boardArray.set(position, gameState.currentPlayer + 1).save();
 					if(checkWinner(game.boardArray, position, gameState.currentPlayer + 1)) {
 						var victoryString = getInChannelMessage(stringifyBoard(game.boardArray) + "\n\n" + getVictoryString(game, gameState.currentPlayer));
 						res.send(victoryString);
