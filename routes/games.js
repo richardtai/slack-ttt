@@ -132,11 +132,14 @@ router.post('/getboard', function(req, res, next) {
 			res.send(NO_ACTIVE_GAME);
 			return;
 		} else {
-			var gamePromise = Game.findOne({_id: gameState.currentGameId}).exec();
-			gamePromise.then(function(game) {
-				res.send(getCurrentBoardAndPlayer(game, gameState));
-			});
+			return gameState;
 		}
+	})
+	.then (function(gameState) {
+		var gamePromise = Game.findOne({_id: gameState.currentGameId}).exec();
+		gamePromise.then(function(game) {
+			res.send(getCurrentBoardAndPlayer(game, gameState));
+		});		
 	})
 	.catch(function (err) {
 		console.log("Error: " + err);
