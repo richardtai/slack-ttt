@@ -4,7 +4,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
 var routes = require('./routes/index');
 var games = require('./routes/games');
 
@@ -13,11 +12,14 @@ var mongoose = require('mongoose');
 
 var app = express();
 
+// load config
+var config = require('./config')[app.get('env')];
+
 // Use native Node promises
 mongoose.Promise = global.Promise;
 
 // connect to MongoDB
-mongoose.connect('mongodb://heroku_4pwzr0qg:g8tue9ssohnj2fuokktelba4ap@ds041831.mlab.com:41831/heroku_4pwzr0qg')
+mongoose.connect(config.mongodbHost)
  .then(() => console.log('Mongodb connection successful.'))
  .catch((err) => console.log(err));
 // mongoose.connect('mongodb://localhost/slack-tictactoe-api')

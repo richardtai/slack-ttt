@@ -1,3 +1,4 @@
+/* Imports */
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
@@ -15,16 +16,10 @@ var MAX_MOVES = 8;
 var EMPTY_SPACE = 0;
 var LOWER_BOUNDARY = 1;
 var UPPER_BOUNDARY = 9;
-
 var NEWGAME_TOKEN = "LizhEsO1HxQDS5IQY2svHoy0";
 var CHOOSE_TOKEN = "8k2Yx7v8AKQMeEVZDppnjeC2";
 var CURRENTBOARD_TOKEN = "vYAGnUzQMfxbtunRdO6zWlFi";
 var USAGE_TOKEN = "jX61S3SPQNq6A4c5tB0ifSbj";
-
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-	res.send('Succesful GET request');
-});
 
 /* POST */
 router.post('/', function(req, res, next) {
@@ -43,18 +38,15 @@ router.post('/newgame', function(req, res, next) {
 		if (gameState == null) {
 			var gameState = getInitialGameState();
 		}
-		// Check if there's an ongoing game
 		if (gameState.hasOngoingGame) {
 			res.send(ACTIVE_GAME);
 		} else {
 			// Create game (strip @)
 			var game = createNewGame(req.body.user_name, req.body.text.substring(1));
-			// Store game
 			Game.create(game, function(err, createdGame) {
 				if (err) return next(err);
 				res.json(getInChannelMessage("Game started!\n" + getCurrentBoardAndPlayer(game, gameState)));
 			});
-			// Update game state
 			gameState.currentGameId = game.id;
 			gameState.hasOngoingGame = true;
 			gameState.save(function(err) {
@@ -79,29 +71,27 @@ router.post('/makemove', function(req, res, next) {
 				return;
 			}
 			Game.findById(gameState.currentGameId, function (err, game) {
-
 				if (err) throw (err);
-
 				if(!isCurrentPlayer(game, gameState.currentPlayer, req.body.user_name)) {
 					res.send("It's " + getCurrentPlayerName(game, gameState.currentPlayer) + "'s turn!");
 					return;
 				}
-
 				var gameBoard = game.boardArray;
 				var position = updatePosition - 1;
-
 				if (gameBoard[position] != EMPTY_SPACE) {
 					res.send(POSITION_ALREADY_PLAYED);
 				} else {
 					game.boardArray.set(position, gameState.currentPlayer + 1);
 					game.save(function(err) {
 						if (err) throw (err);
+						// check for winner
 						if(checkWinner(game.boardArray, position, gameState.currentPlayer + 1)) {
 							var victoryString = getInChannelMessage(stringifyBoard(game.boardArray) + "\n\n" + getVictoryString(game, gameState.currentPlayer));
 							res.send(victoryString);
 							clearAll();
 							return;
 						} 
+						// check if tied
 						else if (gameState.positionsPlayed === MAX_MOVES) {
 							res.send(ENDGAME_TIE);
 							clearAll();
@@ -129,9 +119,6 @@ router.post('/help', function(req, res, next) {
 	res.send(HELP);
 });
 
-/**
-* Returns the current board.
-*/
 router.post('/getboard', function(req, res, next) {
 	if (req.body.token !== CURRENTBOARD_TOKEN) {
 		return;
@@ -149,6 +136,11 @@ router.post('/getboard', function(req, res, next) {
 });
 
 /* Debugging Routes */
+/* GET */
+router.get('/', function(req, res, next) {
+	res.send('Succesful GET request');
+});
+/* POST */
 router.post('/gamestate', function(req, res, next) {
 	GameState.findOne({}, function (err, gameState) {
     	if (err) return next(err);
@@ -175,7 +167,6 @@ router.post('/clearall', function(req, res, next) {
 });
 
 /* Helper functions */
-
 var checkWinner = function checkWinner(board, position, playerValue) {
 	var topLeftDiagonal = checkTopLeftDiagonal(board, playerValue);
 	var topRightDiagonal = checkTopRightDiagonal(board, playerValue);
@@ -353,7 +344,5 @@ var getInChannelMessage = function getInChannelMessage(string) {
 var getCurrentBoardAndPlayer = function getCurrentBoardAndPlayer(game, gameState) {
 	return stringifyBoard(game.boardArray) + "\n" + "It is now " + getCurrentPlayerName(game, gameState.currentPlayer) + "'s turn!";
 }
-
-
 
 module.exports = router;
