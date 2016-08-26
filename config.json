@@ -1,0 +1,8 @@
+{
+	"development": {
+		"mongodbHost" : "mongodb://localhost"
+	},
+	"production": {
+		"mongodbHost" : "mongodb://heroku_4pwzr0qg:g8tue9ssohnj2fuokktelba4ap@ds041831.mlab.com:41831/heroku_4pwzr0qg"
+	}
+}
