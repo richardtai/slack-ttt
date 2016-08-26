@@ -87,7 +87,8 @@ router.post('/makemove', function(req, res, next) {
 					res.send(POSITION_ALREADY_PLAYED);
 					return;
 				} else {
-					game.boardArray.set(position, gameState.currentPlayer + 1).save();
+					game.boardArray.set(position, gameState.currentPlayer + 1);
+					game.save();
 					if(checkWinner(game.boardArray, position, gameState.currentPlayer + 1)) {
 						var victoryString = getInChannelMessage(stringifyBoard(game.boardArray) + "\n\n" + getVictoryString(game, gameState.currentPlayer));
 						res.send(victoryString);
@@ -125,15 +126,20 @@ router.post('/getboard', function(req, res, next) {
 	if (req.body.token !== CURRENTBOARD_TOKEN) {
 		return;
 	}
-	GameState.findOne({}, function(err, gameState) {
-		if (err) throw err;
+	var gameStatePromise = GameState.findOne({}).exec();
+	gameStatePromise.then(function(gameState) {
 		if (gameState == null) {
 			res.send(NO_ACTIVE_GAME);
+			return;
 		} else {
-			Game.findOne({_id: gameState.currentGameId}, function(err, game) {
+			var gamePromise = Game.findOne({_id: gameState.currentGameId}).exec();
+			gamePromise.then(function(game) {
 				res.send(getCurrentBoardAndPlayer(game, gameState));
-			});	
+			});
 		}
+	})
+	.catch(function (err) {
+		console.log("Error: " + err);
 	});
 });
 
