@@ -96,7 +96,7 @@ router.post('/makemove', function(req, res, next) {
 						return;
 					} 
 					else if (gameState.positionsPlayed === MAX_MOVES) {
-						res.send(ENDGAME_TIE);
+						res.json(getInChannelMessage(ENDGAME_TIE));
 						clearAll();
 						return;
 					} else {
