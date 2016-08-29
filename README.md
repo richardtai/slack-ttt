@@ -32,6 +32,8 @@ the number input corresponds to a position on the board, as follows:
 |---+---+---|
 ```
 
+For more help, users can enter the slash command ```/usage```.
+
 ## Requirements
 
 - [x] Users can create a new game in any Slack channel by challenging another user (using their username).
